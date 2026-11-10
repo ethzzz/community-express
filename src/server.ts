@@ -1,8 +1,9 @@
+import { config } from './common/config.ts';
+import { logger } from './common/logger.ts';
 import { createApp } from "./app.js";
 
-const port: number = Number(process.env.PORT ?? 3000);
 const app = createApp();
 
-app.listen(port, () => {
-    console.log(`Listening on port ${port}`);
+app.listen(config.PORT, () => {
+    logger.info({ port: config.PORT }, 'API listening');
 })

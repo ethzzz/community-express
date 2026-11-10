@@ -1,0 +1,17 @@
+GET http://127.0.0.1:3000/health HTTP/2
+Content-Type: application/json
+X-Request-ID: test-123
+
+### 404
+GET http://127.0.0.1:3000/404 HTTP/2
+
+### boom
+GET http://127.0.0.1:3000/boom HTTP/2
+
+### bad body
+GET http://127.0.0.1:3000/health HTTP/2
+Content-Type: application/json
+
+{
+  bad
+}
