@@ -150,7 +150,7 @@ community/
 1. `git mv` 现有 `src/`、`prisma/`、`tsconfig.json`、`package.json` 到 `apps/api/`，保留历史。
 2. 根 `package.json` 只保留 workspace 脚本和共享 devDependencies。
 3. `pnpm-workspace.yaml` 增加 `packages: [apps/*, packages/*]`。
-4. 现有 `docker-compose.yml` 移到 `infra/docker/`，路径和 volume 同步调整。
+4. 现有 `../../../infra/docker/docker-compose.yml` 移到 `infra/docker/`，路径和 volume 同步调整。
 5. 迁移完成标准：`pnpm -r typecheck`、`pnpm -r build`、`apps/api` 的 `/health` 全部通过。
 
 > 迁移是 P0 的第一步，先做“搬家不改业务”，再叠新功能，避免同时改目录和逻辑。
