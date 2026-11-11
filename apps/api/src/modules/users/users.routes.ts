@@ -8,9 +8,9 @@ export const usersRouter = Router();
 usersRouter.use(requireAuth);
 
 usersRouter.post('/:id/follow', asyncHandler(async (req, res) => {
-    res.json(await follow(BigInt(req.user!.sub), parseBigIntId(req.params.id ?? '')));
+    res.json(await follow(BigInt(req.user!.sub), parseBigIntId(req.params.id, 'followeeId')));
 }));
 
 usersRouter.delete('/:id/follow', asyncHandler(async (req, res) => {
-    res.json(await unfollow(BigInt(req.user!.sub), parseBigIntId(req.params.id ?? '')));
+    res.json(await unfollow(BigInt(req.user!.sub), parseBigIntId(req.params.id, 'followeeId')));
 }));
