@@ -7,6 +7,7 @@ const envSchema = z.object({
     DATABASE_URL: z.url(),
     REDIS_URL: z.url(),
     JWT_SECRET: z.string().min(32),
+    JWT_REFRESH_TTL_DAYS : z.coerce.number().int().positive().default(7),
     WEB_ORIGIN: z.url(),
     LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
 });

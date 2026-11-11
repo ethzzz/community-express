@@ -1,0 +1,22 @@
+### 注册
+POST http://127.0.0.1:3000/api/v1/auth/register HTTP/2
+Content-Type: application/json
+
+{
+  "email": "a@test.com",
+  "password": "Password!",
+  "nickname": "A"
+}
+
+
+### 登录
+POST http://127.0.0.1:3000/api/v1/auth/login HTTP/2
+Content-Type: application/json
+
+{
+  "email": "a@test.com",
+  "password": "Password!"
+}
+
+### refresh
+POST http://127.0.0.1:3000/api/v1/auth/refresh HTTP/2
