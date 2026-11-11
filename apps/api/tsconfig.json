@@ -12,6 +12,7 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
   },
   "include": ["src"]
 }
