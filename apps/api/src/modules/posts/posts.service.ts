@@ -6,6 +6,7 @@ import {AppError} from "../../common/errors.ts";
 const select = {
     id: true, authorId: true,  title: true, content: true,
     status: true, likeCount: true, commentCount: true, createdAt: true,
+    author: { select: { id: true, nickname: true, avatarUrl: true } },
 } satisfies Prisma.PostSelect;
 
 type PostRow = Prisma.PostGetPayload<{ select: typeof select }>
@@ -13,7 +14,8 @@ type PostRow = Prisma.PostGetPayload<{ select: typeof select }>
 const toPost = (post: PostRow) => ({
     ...post,
     id: post.id.toString(),
-    authorId: post.authorId.toString()
+    authorId: post.authorId.toString(),
+    author: { ...post.author, id: post.author.id.toString() },
 })
 
 export async function createPost(authorId: bigint, input: { title?: string; content: string }) {
