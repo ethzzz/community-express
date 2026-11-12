@@ -8,6 +8,7 @@ import { authRouter } from "./modules/auth/auth.routes.ts";
 import { feedRouter } from "./modules/feed/feed.routes.ts";
 import { postsRouter } from "./modules/posts/posts.routes.ts";
 import { usersRouter } from "./modules/users/users.routes.ts";
+import { commentsRouter } from "./modules/comments/comments.routes.ts";
 
 export const createApp = () : Express => {
     const app = express();
@@ -29,6 +30,7 @@ export const createApp = () : Express => {
     app.use('/api/v1/feed', feedRouter);
     app.use('/api/v1/posts', postsRouter);
     app.use('/api/v1/users', usersRouter);
+    app.use('/api/v1/posts/:postId/comments', commentsRouter);
 
     app.use(notFound);
     app.use(errorHandler);

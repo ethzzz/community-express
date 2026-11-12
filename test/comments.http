@@ -1,0 +1,17 @@
+### 登录
+POST http://127.0.0.1:3000/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@test.com",
+  "password": "Admin123!ChangeMe"
+}
+
+### 增加评论
+POST http://127.0.0.1:3000/api/v1/posts/1/comments
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZXMiOlsiYWRtaW4iXSwiaWF0IjoxNzk0NDg2NjYxLCJleHAiOjE3OTQ0ODc1NjF9.uoJUJYxsw6f8tvRpWd_aF9p0ZkvpwgwIR8XKEGoum7c
+Content-Type: application/json
+
+{
+  "content": "第一条评论"
+}
