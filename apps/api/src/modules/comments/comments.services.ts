@@ -1,5 +1,6 @@
 import { prisma } from '../../common/db.ts';
 import { AppError } from "../../common/errors.ts";
+import { enqueueOutbox } from "../../common/outbox.ts";
 
 export async function createComment(
     postId: bigint,
@@ -24,12 +25,18 @@ export async function createComment(
 
     const comment = await prisma.$transaction(async tx => {
         const created = await tx.comment.create({
-            data: { postId, authorId, content: input.content },
+            data: { postId, authorId, parentId: parentId ?? null, content: input.content },
             include: { author: { select: { id: true, nickname: true, avatarUrl: true } } },
         })
         await tx.post.update({
             where: { id: postId },
             data: { commentCount: { increment: 1 } }
+        })
+        await enqueueOutbox(tx, 'comment.created', {
+            commentId: created.id.toString(),
+            postId: postId.toString(),
+            actorId: authorId.toString(),
+            recipientId: post.authorId.toString(),
         })
         return created;
     })

@@ -47,6 +47,7 @@ model User {
   createdAt    DateTime   @default(now()) @map("created_at")
   updatedAt    DateTime   @updatedAt @map("updated_at")
   refreshTokens RefreshToken[]
+  notifications Notification[]
   roles         UserRole[]
   posts         Post[]
   comments      Comment[]
@@ -158,4 +159,46 @@ model Follow {
   @@id([followerId, followeeId])
   @@index([followeeId])
   @@map("follows")
+}
+
+enum NotificationType {
+  like
+  comment
+  follow
+  system
+}
+
+enum OutboxStatus {
+  pending
+  processing
+  done
+  failed
+}
+
+model OutboxEvent {
+  id          BigInt       @id @default(autoincrement())
+  type        String       @db.VarChar(64)
+  payload     Json
+  status      OutboxStatus @default(pending)
+  retryCount  Int          @default(0) @map("retry_count")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  processedAt DateTime?    @map("processed_at")
+  @@index([status, createdAt])
+  @@map("outbox_events")
+}
+
+model Notification {
+  id         BigInt           @id @default(autoincrement())
+  eventId    String?          @unique @map("event_id") @db.VarChar(64)
+  userId     BigInt           @map("user_id")
+  type       NotificationType
+  actorId    BigInt?          @map("actor_id")
+  targetType String?          @map("target_type") @db.VarChar(32)
+  targetId   BigInt?          @map("target_id")
+  payload    Json?
+  readAt     DateTime?        @map("read_at")
+  createdAt  DateTime         @default(now()) @map("created_at")
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId, createdAt])
+  @@map("notifications")
 }

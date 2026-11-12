@@ -1,5 +1,6 @@
 import { prisma } from '../../common/db.ts';
 import { AppError } from '../../common/errors.ts';
+import { enqueueOutbox } from "../../common/outbox.ts";
 
 export async function likePost(postId: bigint, userId: bigint) {
     return prisma.$transaction(async (tx) => {
@@ -19,9 +20,15 @@ export async function likePost(postId: bigint, userId: bigint) {
                 where: { id: postId },
                 data: { likeCount: { increment: 1 }}
             })
+            await enqueueOutbox(tx, 'like.created', {
+                targetType: 'post',
+                targetId: postId.toString(),
+                actorId: userId.toString(),
+                recipientId: post.authorId.toString(),
+            })
         }
 
-        return { like: true, changed: created.count === 1, authorId: post.authorId }
+        return { like: true, changed: created.count === 1, authorId: post.authorId.toString() }
     })
 }
 
