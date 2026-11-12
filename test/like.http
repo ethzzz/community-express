@@ -1,0 +1,20 @@
+### 喜欢
+POST http://127.0.0.1:3000/api/v1/posts/1/like
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZXMiOlsiYWRtaW4iXSwiaWF0IjoxNzk0NDg4NDYxLCJleHAiOjE3OTQ0ODkzNjF9.lbZezGR5PnAC_XIeCfFJx_OWTY7X03-UUQ8_RpA0OtE
+Content-Type: application/json
+
+{
+  "postId": 1
+}
+
+### 不喜欢
+DELETE http://127.0.0.1:3000/api/v1/posts/1/like
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZXMiOlsiYWRtaW4iXSwiaWF0IjoxNzk0NDg4NDYxLCJleHAiOjE3OTQ0ODkzNjF9.lbZezGR5PnAC_XIeCfFJx_OWTY7X03-UUQ8_RpA0OtE
+Content-Type: application/json
+
+{
+  "postId": 1
+}
+
+
+

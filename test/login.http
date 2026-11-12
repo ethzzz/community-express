@@ -1,0 +1,8 @@
+### 登录
+POST http://127.0.0.1:3000/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@test.com",
+  "password": "Admin123!ChangeMe"
+}
