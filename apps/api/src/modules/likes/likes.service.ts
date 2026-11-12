@@ -27,6 +27,12 @@ export async function likePost(postId: bigint, userId: bigint) {
 
 export async function unlikePost(postId: bigint, userId: bigint) {
     return prisma.$transaction(async (tx) => {
+        const post = await tx.post.findFirst({
+            where: { id: postId, status: 'published' },
+            select: { id: true }
+        })
+        if(!post) throw new AppError("POST_NOT_FOUND", 404, `Post not found`);
+
         const deleted = await tx.like.deleteMany({
             where: { userId, targetType: 'post', targetId: postId },
         })
@@ -34,7 +40,7 @@ export async function unlikePost(postId: bigint, userId: bigint) {
         if(deleted.count === 1) {
             await tx.post.updateMany({
                 where: { id: postId, likeCount: { gt: 0 } },
-                data: { likeCount: { increment: 1 }}
+                data: { likeCount: { decrement: 1 }}
             })
         }
 
