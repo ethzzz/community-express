@@ -6,3 +6,39 @@ Content-Type: application/json
   "email": "admin@test.com",
   "password": "Admin123!ChangeMe"
 }
+
+### A 登录
+POST http://127.0.0.1:3000/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "a1@test.com",
+  "password": "Passw0rd!"
+}
+
+### B 登录
+POST http://127.0.0.1:3000/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "b@test.com",
+  "password": "Passw0rd!"
+}
+
+### C 登录
+POST http://127.0.0.1:3000/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "c@test.com",
+  "password": "Passw0rd!"
+}
+
+### D 登录
+POST http://127.0.0.1:3000/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "d@test.com",
+  "password": "Passw0rd!"
+}

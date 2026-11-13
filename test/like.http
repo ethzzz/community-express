@@ -16,5 +16,13 @@ Content-Type: application/json
   "postId": 1
 }
 
+### B点赞A的帖子
+POST http://127.0.0.1:3000/api/v1/posts/3/like
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0Iiwicm9sZXMiOlsidXNlciJdLCJpYXQiOjE3OTQ1MDU5MzAsImV4cCI6MTc5NDUwNjgzMH0.qoXxvlbKCgjtFCPs_lngMxXR8MROjgyNDEebcc6bzNs
+Content-Type: application/json
+
+{
+  "postId": 2
+}
 
 
