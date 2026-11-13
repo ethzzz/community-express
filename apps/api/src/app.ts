@@ -10,6 +10,7 @@ import { postsRouter } from "./modules/posts/posts.routes.ts";
 import { usersRouter } from "./modules/users/users.routes.ts";
 import { commentsRouter } from "./modules/comments/comments.routes.ts";
 import { likesRouter } from "./modules/likes/likes.routes.ts";
+import { notificationsRouter } from "./modules/notifications/notifications.routes.ts";
 
 export const createApp = () : Express => {
     const app = express();
@@ -33,6 +34,7 @@ export const createApp = () : Express => {
     app.use('/api/v1/users', usersRouter);
     app.use('/api/v1/posts/:postId/comments', commentsRouter);
     app.use('/api/v1/posts/:postId/like', likesRouter);
+    app.use('/api/v1/notifications', notificationsRouter);
 
     app.use(notFound);
     app.use(errorHandler);
