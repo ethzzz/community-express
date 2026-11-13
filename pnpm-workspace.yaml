@@ -4,6 +4,7 @@ packages:
 allowBuilds:
   '@prisma/client': false
   '@prisma/engines': false
+  '@scarf/scarf': false
   argon2: false
   esbuild: true
   msgpackr-extract: false

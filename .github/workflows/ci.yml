@@ -1,0 +1,39 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    # 用 service 容器起依赖，CI 不依赖外部 MySQL/Redis
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: community_test
+        ports: ['3006:3306']
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s --health-timeout=5s --health-retries=10
+
+      redis:
+        image: redis:7
+        ports: ['6379:6379']
+    env:
+      NODE_ENV: test
+      DATABASE_URL: mysql://root:root@127.0.0.1:3306/community_test
+      REDIS_URL: redis://127.0.0.1:6379
+      JWT_SECRET: 01234567890123456789012345678901
+      WEB_ORIGIN: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 12.18.0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter api exec prisma migrate deploy
+      - run: pnpm --filter api exec prisma db seed
+      - run: pnpm -r typecheck
+      - run: pnpm --filter api test
+      - run: pnpm -r build
