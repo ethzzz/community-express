@@ -10,7 +10,9 @@
     "typecheck": "tsc --noEmit",
     "prisma:studio": "prisma studio",
     "docker": "docker compose -f infra/docker/docker-compose.yml ps",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:db:init": "cross-env DATABASE_URL=mysql://root:123456@127.0.0.1:3306/community_test prisma migrate deploy && cross-env DATABASE_URL=mysql://root:123456@127.0.0.1:3306/community_test prisma db seed",
+    "pretest": "pnpm test:db:init"
   },
   "keywords": [],
   "author": "",
@@ -39,6 +41,7 @@
     "@types/node": "^26.6.6",
     "@types/supertest": "^7.2.1",
     "@types/swagger-ui-express": "^4.1.8",
+    "cross-env": "^10.1.0",
     "prisma": "6.19.3",
     "supertest": "^7.3.2",
     "tsx": "^4.23.15",

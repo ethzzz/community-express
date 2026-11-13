@@ -229,6 +229,9 @@ importers:
       '@types/swagger-ui-express':
         specifier: ^4.1.8
         version: 4.1.8
+      cross-env:
+        specifier: ^10.1.0
+        version: 10.1.0
       prisma:
         specifier: 6.19.3
         version: 6.19.3(typescript@7.0.2)
