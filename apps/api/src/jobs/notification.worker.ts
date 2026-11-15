@@ -66,3 +66,7 @@ export const notificationWorker = new Worker(
 notificationWorker.on('failed', (job, error) => {
     logger.error({ err: error, jobId: job?.id }, 'notification job failed');
 })
+
+notificationWorker.on('error', (error) => {
+    logger.error({ err: error }, 'notification worker error');
+})

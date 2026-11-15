@@ -1,4 +1,5 @@
 import { Queue } from 'bullmq';
+import { logger } from '../common/logger.ts';
 import { redis } from '../common/redis.ts';
 
 export const notificationQueue = new Queue('notification', {
@@ -9,4 +10,8 @@ export const notificationQueue = new Queue('notification', {
         removeOnComplete: 1000,
         removeOnFail: 5000
     }
+});
+
+notificationQueue.on('error', (error) => {
+    logger.error({ err: error }, 'notification queue error');
 });

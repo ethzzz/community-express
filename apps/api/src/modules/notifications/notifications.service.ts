@@ -3,7 +3,7 @@ import { prisma } from '../../common/db.ts'
 export async function listNotifications(userId: bigint, limit = 20) {
     const rows = await prisma.notification.findMany({
         where: { userId },
-        orderBy: [{ createAt: 'desc'}, { id: 'desc'}],
+        orderBy: [{ createdAt: 'desc'}, { id: 'desc'}],
         take: limit,
     });
     return rows.map((row) => ({

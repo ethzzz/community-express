@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { requireAuth } from "../../common/auth.ts";
+import { logger } from '../../common/logger.ts';
 import { asyncHandler } from "../../common/middleware.ts";
 import { redis } from '../../common/redis.ts';
 import { listNotifications, markRead } from "./notifications.service.ts";
@@ -25,6 +26,9 @@ notificationsRouter.get('/stream', requireAuth, asyncHandler(async (req, res) =>
     res.flushHeaders();
 
     const subscriber = redis.duplicate();
+    subscriber.on('error', (error) => {
+        logger.error({ err: error }, 'notification subscriber error');
+    });
     await subscriber.subscribe(`notify:${userId}`);
 
     let closed = false;
