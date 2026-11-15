@@ -1,4 +1,8 @@
 node_modules
 dist
+.next
 .idea
 apps/api/.env
+apps/admin-api/.env
+apps/web/.env.local
+*.tsbuildinfo

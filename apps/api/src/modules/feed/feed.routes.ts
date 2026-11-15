@@ -31,9 +31,13 @@ feedRouter.get('/', requireAuth, asyncHandler(async (req, res) => {
 
     res.json({
         items: page.map((row) => ({
-            ...row,
             id: String(row.id),
-            author_id: String(row.author_id),
+            authorId: String(row.author_id),
+            title: row.title,
+            content: row.content,
+            likeCount: row.like_count,
+            commentCount: row.comment_count,
+            createdAt: new Date(row.created_at as string | Date).toISOString(),
             author: {
                 id: String(row.author_id),
                 nickname: row.author_nickname,
