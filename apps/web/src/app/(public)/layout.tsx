@@ -21,6 +21,11 @@ export default async function PublicLayout({ children }: { children: React.React
             <Link className="text-sm text-slate-600 hover:text-slate-900" href="/posts/new">
               发帖
             </Link>
+            {loggedIn && (
+              <Link className="text-sm text-slate-600 hover:text-slate-900" href="/notifications">
+                通知
+              </Link>
+            )}
           </div>
           <div className="flex items-center gap-3 text-sm">
             {loggedIn ? (

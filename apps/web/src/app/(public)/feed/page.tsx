@@ -1,15 +1,9 @@
 import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { FeedList } from '@/components/feed-list';
 import { ACCESS_COOKIE, API_BASE } from '@/lib/backend';
-
-type Post = {
-  id: string;
-  title: string | null;
-  content: string;
-  createdAt: string;
-  author?: { nickname?: string; avatarUrl?: string | null };
-};
+import type { Post } from '@/lib/types';
 
 type FeedResponse = {
   items: Post[];
@@ -42,32 +36,7 @@ export default async function FeedPage() {
           发帖
         </Link>
       </div>
-
-      {data.items.length === 0 ? (
-        <p className="rounded border bg-white p-6 text-sm text-slate-500">
-          还没有内容，去关注几个人或发第一条帖子。
-        </p>
-      ) : (
-        <ul className="space-y-4">
-          {data.items.map((post) => (
-            <li key={post.id}>
-              <Link
-                className="block rounded-xl border bg-white p-5 shadow-sm transition hover:border-slate-400"
-                href={`/posts/${post.id}`}
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <p className="font-medium">{post.author?.nickname ?? '匿名用户'}</p>
-                  <time className="text-xs text-slate-400">
-                    {new Date(post.createdAt).toLocaleString('zh-CN')}
-                  </time>
-                </div>
-                {post.title && <h2 className="mt-3 text-lg font-semibold">{post.title}</h2>}
-                <p className="mt-2 whitespace-pre-wrap text-slate-700">{post.content}</p>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+      <FeedList initialCursor={data.nextCursor} initialItems={data.items} />
     </main>
   );
 }

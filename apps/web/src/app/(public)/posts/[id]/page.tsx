@@ -1,14 +1,10 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { CommentSection } from '@/components/comment-section';
+import { FollowButton } from '@/components/follow-button';
+import { LikeButton } from '@/components/like-button';
 import { API_BASE } from '@/lib/backend';
-
-type Post = {
-  id: string;
-  title: string | null;
-  content: string;
-  createdAt: string;
-  author?: { nickname?: string; avatarUrl?: string | null };
-};
+import type { Post } from '@/lib/types';
 
 export default async function PostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -31,7 +27,13 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
           {new Date(post.createdAt).toLocaleString('zh-CN')}
         </p>
         <p className="mt-6 whitespace-pre-wrap leading-7 text-slate-800">{post.content}</p>
+        <div className="mt-6 flex items-center gap-3">
+          <LikeButton initialCount={post.likeCount} postId={post.id} />
+          {post.author?.id && <FollowButton userId={post.author.id} />}
+          <span className="text-sm text-slate-500">评论 {post.commentCount}</span>
+        </div>
       </article>
+      <CommentSection postId={post.id} />
     </main>
   );
 }

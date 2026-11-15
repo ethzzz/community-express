@@ -5,7 +5,8 @@ import { isJwtExpired } from '@/lib/jwt';
 
 export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
-  const isProtected = pathname === '/feed' || pathname === '/posts/new';
+  const isProtected =
+    pathname === '/feed' || pathname === '/posts/new' || pathname === '/notifications';
   if (!isProtected) return NextResponse.next();
 
   const refresh = request.cookies.get(REFRESH_COOKIE)?.value;
@@ -22,5 +23,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/feed/:path*', '/posts/new'],
+  matcher: ['/feed/:path*', '/posts/new', '/notifications'],
 };
