@@ -32,7 +32,8 @@ export default function LoginPage() {
       return;
     }
 
-    router.push('/feed');
+    const next = new URLSearchParams(window.location.search).get('next');
+    router.push(next && next.startsWith('/') && !next.startsWith('//') ? next : '/feed');
     router.refresh();
   }
 

@@ -8,10 +8,18 @@ import { BellIcon, PenIcon } from '@/components/icons';
 const links = [
   { href: '/feed', label: '关注流' },
   { href: '/notifications', label: '通知', icon: true },
+  { href: '/admin', label: '管理', adminOnly: true },
 ];
 
-export function SiteHeader({ loggedIn }: { loggedIn: boolean }) {
+export function SiteHeader({
+  loggedIn,
+  isAdmin = false,
+}: {
+  loggedIn: boolean;
+  isAdmin?: boolean;
+}) {
   const pathname = usePathname();
+  const visibleLinks = links.filter((link) => !link.adminOnly || isAdmin);
 
   return (
     <header className="sticky top-0 z-40 border-b border-[var(--line)] bg-[rgba(247,242,232,0.82)] backdrop-blur-xl">
@@ -29,7 +37,7 @@ export function SiteHeader({ loggedIn }: { loggedIn: boolean }) {
 
           {loggedIn && (
             <nav className="hidden items-center gap-6 sm:flex">
-              {links.map((link) => (
+              {visibleLinks.map((link) => (
                 <Link
                   className="nav-link flex items-center gap-1.5"
                   data-active={pathname.startsWith(link.href)}

@@ -15,14 +15,20 @@ export type CookieToSet = {
   options: typeof cookieOptions & { maxAge: number };
 };
 
-export async function callBackendWithAuth(path: string, init: RequestInit = {}) {
+export const ADMIN_API_BASE = process.env.ADMIN_API_URL ?? 'http://127.0.0.1:3002';
+
+export async function callServiceWithAuth(
+  base: string,
+  path: string,
+  init: RequestInit = {},
+) {
   const store = await cookies();
   const access = store.get(ACCESS_COOKIE)?.value;
   const refresh = store.get(REFRESH_COOKIE)?.value;
   const headers = new Headers(init.headers);
   if (access) headers.set('Authorization', `Bearer ${access}`);
 
-  let response = await fetch(`${API_BASE}${path}`, { ...init, headers, cache: 'no-store' });
+  let response = await fetch(`${base}${path}`, { ...init, headers, cache: 'no-store' });
   const cookiesToSet: CookieToSet[] = [];
 
   if (response.status === 401 && refresh) {
@@ -48,9 +54,13 @@ export async function callBackendWithAuth(path: string, init: RequestInit = {}) 
       }
 
       headers.set('Authorization', `Bearer ${data.accessToken}`);
-      response = await fetch(`${API_BASE}${path}`, { ...init, headers, cache: 'no-store' });
+      response = await fetch(`${base}${path}`, { ...init, headers, cache: 'no-store' });
     }
   }
 
   return { response, cookiesToSet };
+}
+
+export function callBackendWithAuth(path: string, init: RequestInit = {}) {
+  return callServiceWithAuth(API_BASE, path, init);
 }

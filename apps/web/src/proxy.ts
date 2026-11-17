@@ -6,7 +6,10 @@ import { isJwtExpired } from '@/lib/jwt';
 export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   const isProtected =
-    pathname === '/feed' || pathname === '/posts/new' || pathname === '/notifications';
+    pathname === '/feed' ||
+    pathname === '/posts/new' ||
+    pathname === '/notifications' ||
+    pathname.startsWith('/admin');
   if (!isProtected) return NextResponse.next();
 
   const refresh = request.cookies.get(REFRESH_COOKIE)?.value;
@@ -23,5 +26,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/feed/:path*', '/posts/new', '/notifications'],
+  matcher: ['/feed/:path*', '/posts/new', '/notifications', '/admin/:path*'],
 };

@@ -1,15 +1,17 @@
 import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { SiteHeader } from '@/components/site-header';
-import { REFRESH_COOKIE } from '@/lib/backend';
+import { ACCESS_COOKIE, REFRESH_COOKIE } from '@/lib/backend';
+import { decodeJwt } from '@/lib/jwt';
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const store = await cookies();
   const loggedIn = Boolean(store.get(REFRESH_COOKIE)?.value);
+  const isAdmin = decodeJwt(store.get(ACCESS_COOKIE)?.value)?.roles?.includes('admin') ?? false;
 
   return (
     <div className="paper-shell min-h-screen">
-      <SiteHeader loggedIn={loggedIn} />
+      <SiteHeader isAdmin={isAdmin} loggedIn={loggedIn} />
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">{children}</div>
       <footer className="mx-auto mt-16 w-full max-w-6xl px-4 pb-10 sm:px-6">
         <div className="flex flex-col items-start justify-between gap-3 border-t border-[var(--line)] pt-6 text-xs text-[var(--muted)] sm:flex-row sm:items-center">
