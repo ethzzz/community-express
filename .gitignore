@@ -4,5 +4,6 @@ dist
 .idea
 apps/api/.env
 apps/admin-api/.env
+apps/admin-api/pnpm-lock.yaml
 apps/web/.env.local
 *.tsbuildinfo
