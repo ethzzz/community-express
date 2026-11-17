@@ -1,8 +1,8 @@
 'use client';
 
-import Link from 'next/link';
 import { useState } from 'react';
-import { LikeButton } from '@/components/like-button';
+import { EmptyState } from '@/components/empty-state';
+import { PostCard } from '@/components/post-card';
 import { bffFetch } from '@/lib/bff';
 import type { Post } from '@/lib/types';
 
@@ -42,51 +42,36 @@ export function FeedList({
 
   if (items.length === 0) {
     return (
-      <p className="rounded border bg-white p-6 text-sm text-slate-500">
-        还没有内容，去关注几个人或发第一条帖子。
-      </p>
+      <EmptyState
+        action={{ href: '/posts/new', label: '发出第一条帖子' }}
+        description="关注更多人，或者先写下你正在做的事。围炉的第一把火，可以从你开始。"
+        title="这里还很安静"
+      />
     );
   }
 
   return (
     <div>
-      <ul className="space-y-4">
-        {items.map((post) => (
-          <li key={post.id} className="rounded-xl border bg-white p-5 shadow-sm">
-            <div className="flex items-center justify-between gap-3">
-              <p className="font-medium">{post.author?.nickname ?? '匿名用户'}</p>
-              <time className="text-xs text-slate-400">
-                {new Date(post.createdAt).toLocaleString('zh-CN')}
-              </time>
-            </div>
-            <Link className="mt-3 block" href={`/posts/${post.id}`}>
-              {post.title && <h2 className="text-lg font-semibold">{post.title}</h2>}
-              <p className="mt-2 whitespace-pre-wrap text-slate-700">{post.content}</p>
-            </Link>
-            <div className="mt-4 flex items-center gap-3">
-              <LikeButton initialCount={post.likeCount} postId={post.id} />
-              <Link className="text-sm text-slate-500" href={`/posts/${post.id}`}>
-                评论 {post.commentCount}
-              </Link>
-            </div>
-          </li>
-        ))}
-      </ul>
+      <div className="mb-3 flex items-center justify-between px-1">
+        <p className="text-xs text-[var(--muted)]">共 {items.length} 篇</p>
+        <span className="chip">按时间排序</span>
+      </div>
 
-      <div className="mt-5 text-center">
+      <div className="space-y-4">
+        {items.map((post, index) => (
+          <PostCard index={index} key={post.id} post={post} />
+        ))}
+      </div>
+
+      <div className="mt-6 text-center">
         {cursor ? (
-          <button
-            className="rounded border px-4 py-2 text-sm hover:bg-slate-50 disabled:opacity-50"
-            disabled={loading}
-            onClick={loadMore}
-            type="button"
-          >
-            {loading ? '加载中...' : '加载更多'}
+          <button className="btn-ghost" disabled={loading} onClick={loadMore} type="button">
+            {loading ? '正在添柴...' : '再看看更早的帖子'}
           </button>
         ) : (
-          <p className="text-sm text-slate-400">已经到底了</p>
+          <p className="text-xs tracking-widest text-[var(--muted)]">已经到底了</p>
         )}
-        {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
+        {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
       </div>
     </div>
   );

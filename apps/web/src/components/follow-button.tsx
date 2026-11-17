@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { UsersIcon } from '@/components/icons';
 import { bffFetch } from '@/lib/bff';
 
 export function FollowButton({ userId }: { userId: string }) {
@@ -22,11 +23,14 @@ export function FollowButton({ userId }: { userId: string }) {
 
   return (
     <button
-      className="rounded border px-3 py-1 text-sm hover:bg-slate-50 disabled:opacity-50"
+      aria-pressed={following}
+      className="action-pill"
+      data-active={following}
       disabled={pending}
       onClick={toggle}
       type="button"
     >
+      <UsersIcon className="h-4 w-4" />
       {following ? '已关注' : '关注'}
     </button>
   );

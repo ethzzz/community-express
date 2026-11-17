@@ -36,48 +36,67 @@ export default function RegisterPage() {
   }
 
   return (
-    <main className="mx-auto max-w-sm px-4 py-20">
-      <form className="space-y-3 rounded-xl border bg-white p-6 shadow-sm" method="post" onSubmit={submit}>
-        <h1 className="text-2xl font-bold">注册</h1>
-        <input
-          autoComplete="nickname"
-          className="w-full rounded border p-2"
-          name="nickname"
-          placeholder="昵称"
-          required
-        />
-        <input
-          autoComplete="email"
-          className="w-full rounded border p-2"
-          name="email"
-          placeholder="邮箱"
-          required
-          type="email"
-        />
-        <input
-          autoComplete="new-password"
-          className="w-full rounded border p-2"
-          minLength={8}
-          name="password"
-          placeholder="密码"
-          required
-          type="password"
-        />
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        <button
-          className="w-full rounded bg-slate-900 py-2 text-white disabled:opacity-50"
-          disabled={pending}
-          type="submit"
-        >
-          {pending ? '注册中...' : '注册'}
+    <div>
+      <p className="eyebrow">Join the table</p>
+      <h1 className="font-display mt-2 text-4xl font-semibold">找把椅子坐下</h1>
+      <p className="mt-2 text-sm text-[var(--muted)]">先介绍一下自己，再开始聊。</p>
+
+      <form className="card mt-7 space-y-5 p-6 sm:p-8" method="post" onSubmit={submit}>
+        <label className="block">
+          <span className="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-[var(--muted)]">
+            昵称
+          </span>
+          <input
+            autoComplete="nickname"
+            className="field"
+            name="nickname"
+            placeholder="别人怎么称呼你"
+            required
+          />
+        </label>
+
+        <label className="block">
+          <span className="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-[var(--muted)]">
+            邮箱
+          </span>
+          <input
+            autoComplete="email"
+            className="field"
+            name="email"
+            placeholder="you@example.com"
+            required
+            type="email"
+          />
+        </label>
+
+        <label className="block">
+          <span className="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-[var(--muted)]">
+            密码
+          </span>
+          <input
+            autoComplete="new-password"
+            className="field"
+            minLength={8}
+            name="password"
+            placeholder="至少 8 位"
+            required
+            type="password"
+          />
+        </label>
+
+        {error && <p className="text-sm text-red-600">{error}</p>}
+
+        <button className="btn-primary w-full" disabled={pending} type="submit">
+          {pending ? '创建中...' : '创建账号'}
         </button>
-        <p className="text-center text-sm text-slate-500">
-          已有账号？{' '}
-          <Link className="text-slate-900 underline" href="/login">
-            登录
+
+        <p className="text-center text-sm text-[var(--muted)]">
+          已经有账号？{' '}
+          <Link className="font-semibold text-[var(--accent-dark)]" href="/login">
+            直接登录
           </Link>
         </p>
       </form>
-    </main>
+    </div>
   );
 }

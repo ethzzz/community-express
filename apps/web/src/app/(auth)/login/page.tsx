@@ -37,40 +37,53 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="mx-auto max-w-sm px-4 py-20">
-      <form className="space-y-3 rounded-xl border bg-white p-6 shadow-sm" method="post" onSubmit={submit}>
-        <h1 className="text-2xl font-bold">登录</h1>
-        <input
-          autoComplete="email"
-          className="w-full rounded border p-2"
-          name="email"
-          placeholder="邮箱"
-          required
-          type="email"
-        />
-        <input
-          autoComplete="current-password"
-          className="w-full rounded border p-2"
-          name="password"
-          placeholder="密码"
-          required
-          type="password"
-        />
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        <button
-          className="w-full rounded bg-slate-900 py-2 text-white disabled:opacity-50"
-          disabled={pending}
-          type="submit"
-        >
+    <div>
+      <p className="eyebrow">Welcome back</p>
+      <h1 className="font-display mt-2 text-4xl font-semibold">回来坐坐</h1>
+      <p className="mt-2 text-sm text-[var(--muted)]">你的关注流还在原来的位置。</p>
+
+      <form className="card mt-7 space-y-5 p-6 sm:p-8" method="post" onSubmit={submit}>
+        <label className="block">
+          <span className="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-[var(--muted)]">
+            邮箱
+          </span>
+          <input
+            autoComplete="email"
+            className="field"
+            name="email"
+            placeholder="you@example.com"
+            required
+            type="email"
+          />
+        </label>
+
+        <label className="block">
+          <span className="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-[var(--muted)]">
+            密码
+          </span>
+          <input
+            autoComplete="current-password"
+            className="field"
+            name="password"
+            placeholder="••••••••"
+            required
+            type="password"
+          />
+        </label>
+
+        {error && <p className="text-sm text-red-600">{error}</p>}
+
+        <button className="btn-primary w-full" disabled={pending} type="submit">
           {pending ? '登录中...' : '登录'}
         </button>
-        <p className="text-center text-sm text-slate-500">
+
+        <p className="text-center text-sm text-[var(--muted)]">
           还没有账号？{' '}
-          <Link className="text-slate-900 underline" href="/register">
-            注册
+          <Link className="font-semibold text-[var(--accent-dark)]" href="/register">
+            加入围炉
           </Link>
         </p>
       </form>
-    </main>
+    </div>
   );
 }

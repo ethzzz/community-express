@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { HeartIcon } from '@/components/icons';
 import { bffFetch } from '@/lib/bff';
 
 type Props = {
@@ -36,12 +37,16 @@ export function LikeButton({ postId, initialCount, initialLiked = false }: Props
 
   return (
     <button
-      className="rounded border px-2 py-1 text-sm hover:bg-slate-50 disabled:opacity-50"
+      aria-label={liked ? '取消点赞' : '点赞'}
+      aria-pressed={liked}
+      className="action-pill"
+      data-active={liked}
       disabled={pending}
       onClick={toggle}
       type="button"
     >
-      {liked ? '♥' : '♡'} {count}
+      <HeartIcon className="h-4 w-4" filled={liked} />
+      {count}
     </button>
   );
 }

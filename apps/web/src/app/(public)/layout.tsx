@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { cookies } from 'next/headers';
-import { LogoutButton } from '@/components/logout-button';
+import { SiteHeader } from '@/components/site-header';
 import { REFRESH_COOKIE } from '@/lib/backend';
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
@@ -8,42 +8,20 @@ export default async function PublicLayout({ children }: { children: React.React
   const loggedIn = Boolean(store.get(REFRESH_COOKIE)?.value);
 
   return (
-    <div className="min-h-screen">
-      <header className="border-b bg-white">
-        <nav className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Link className="text-lg font-bold" href="/feed">
-              社区
+    <div className="paper-shell min-h-screen">
+      <SiteHeader loggedIn={loggedIn} />
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">{children}</div>
+      <footer className="mx-auto mt-16 w-full max-w-6xl px-4 pb-10 sm:px-6">
+        <div className="flex flex-col items-start justify-between gap-3 border-t border-[var(--line)] pt-6 text-xs text-[var(--muted)] sm:flex-row sm:items-center">
+          <p>围炉 · 一个用来把问题摊开聊的地方</p>
+          <p>
+            Built with Express + Next.js ·{' '}
+            <Link className="underline decoration-[var(--line-strong)] underline-offset-4" href="/feed">
+              回到关注流
             </Link>
-            <Link className="text-sm text-slate-600 hover:text-slate-900" href="/feed">
-              关注流
-            </Link>
-            <Link className="text-sm text-slate-600 hover:text-slate-900" href="/posts/new">
-              发帖
-            </Link>
-            {loggedIn && (
-              <Link className="text-sm text-slate-600 hover:text-slate-900" href="/notifications">
-                通知
-              </Link>
-            )}
-          </div>
-          <div className="flex items-center gap-3 text-sm">
-            {loggedIn ? (
-              <LogoutButton />
-            ) : (
-              <>
-                <Link className="text-slate-600 hover:text-slate-900" href="/login">
-                  登录
-                </Link>
-                <Link className="text-slate-600 hover:text-slate-900" href="/register">
-                  注册
-                </Link>
-              </>
-            )}
-          </div>
-        </nav>
-      </header>
-      {children}
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }

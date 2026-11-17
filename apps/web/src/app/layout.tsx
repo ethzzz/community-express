@@ -1,10 +1,15 @@
-import { Providers } from './providers';
+import '@fontsource-variable/fraunces';
+import '@fontsource-variable/instrument-sans';
 import type { Metadata } from 'next';
+import { Providers } from './providers';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: '社区',
-  description: 'Express + Next.js 社区项目',
+  title: {
+    default: '围炉 · 一个能聊事的社区',
+    template: '%s · 围炉',
+  },
+  description: '围炉，一个用 Express + Next.js 搭建的社区。',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

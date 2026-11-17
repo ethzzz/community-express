@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { FlameIcon, PenIcon } from '@/components/icons';
 
 export default function NewPostPage() {
   const router = useRouter();
@@ -39,37 +40,81 @@ export default function NewPostPage() {
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-8">
-      <Link className="text-sm text-slate-500 hover:text-slate-900" href="/feed">
+    <main className="py-8 sm:py-10">
+      <Link
+        className="inline-flex items-center gap-2 text-sm text-[var(--muted)] transition-colors hover:text-[var(--ink)]"
+        href="/feed"
+      >
         ← 返回关注流
       </Link>
-      <form className="mt-4 space-y-3 rounded-xl border bg-white p-6 shadow-sm" onSubmit={submit}>
-        <h1 className="text-2xl font-bold">发帖</h1>
-        <input
-          className="w-full rounded border p-2"
-          maxLength={200}
-          onChange={(event) => setTitle(event.target.value)}
-          placeholder="标题（可选）"
-          value={title}
-        />
-        <textarea
-          className="w-full rounded border p-3"
-          onChange={(event) => setContent(event.target.value)}
-          placeholder="写点什么..."
-          required
-          rows={10}
-          value={content}
-        />
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        <p className="text-xs text-slate-500">新帖默认 pending，审核通过后才会进入关注流。</p>
-        <button
-          className="rounded bg-slate-900 px-4 py-2 text-white disabled:opacity-50"
-          disabled={pending}
-          type="submit"
-        >
-          {pending ? '发布中...' : '发布'}
-        </button>
-      </form>
+
+      <div className="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
+        <form className="card overflow-hidden" onSubmit={submit}>
+          <div className="h-1.5 bg-[var(--accent)]" />
+          <div className="p-6 sm:p-8">
+            <p className="eyebrow">New post</p>
+            <h1 className="font-display mt-2 text-3xl font-semibold">写点什么</h1>
+            <p className="mt-2 text-sm text-[var(--muted)]">
+              把背景、卡点和下一步写清楚，比一句结论更有用。
+            </p>
+
+            <label className="mt-7 block text-xs font-semibold uppercase tracking-widest text-[var(--muted)]">
+              标题
+            </label>
+            <input
+              className="font-display mt-2 w-full border-0 border-b border-[var(--line)] bg-transparent px-0 py-3 text-2xl font-semibold outline-none placeholder:text-[var(--line-strong)] focus:border-[var(--accent)]"
+              maxLength={200}
+              onChange={(event) => setTitle(event.target.value)}
+              placeholder="一句话说清你要聊什么（可选）"
+              value={title}
+            />
+
+            <label className="mt-6 block text-xs font-semibold uppercase tracking-widest text-[var(--muted)]">
+              正文
+            </label>
+            <textarea
+              className="mt-2 w-full resize-y border-0 bg-transparent px-0 py-3 text-[0.98rem] leading-8 outline-none placeholder:text-[var(--line-strong)]"
+              onChange={(event) => setContent(event.target.value)}
+              placeholder="发生了什么？你试过什么？现在卡在哪里？"
+              required
+              rows={14}
+              value={content}
+            />
+
+            {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
+
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--line)] pt-5">
+              <p className="text-xs text-[var(--muted)]">
+                {content.length} 字 · 发布后进入待审核，通过后才会出现在关注流
+              </p>
+              <button className="btn-primary" disabled={pending} type="submit">
+                <PenIcon className="h-4 w-4" />
+                {pending ? '发布中...' : '发布'}
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <aside className="space-y-4 lg:sticky lg:top-24">
+          <section className="card p-5">
+            <div className="flex items-center gap-2">
+              <FlameIcon className="h-4 w-4 text-[var(--accent)]" />
+              <p className="eyebrow">写之前</p>
+            </div>
+            <ul className="mt-3 space-y-2.5 text-sm leading-6 text-[var(--ink-soft)]">
+              <li>先给背景，再给结论。</li>
+              <li>贴出可复现的命令或报错。</li>
+              <li>如果求助，写清你已经排除了什么。</li>
+            </ul>
+          </section>
+          <section className="card p-5">
+            <p className="eyebrow">审核说明</p>
+            <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">
+              新帖默认是 pending。管理员审核通过后，关注你的人才能在 feed 里看到。
+            </p>
+          </section>
+        </aside>
+      </div>
     </main>
   );
 }

@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { FeedList } from '@/components/feed-list';
+import { FeedSidebar } from '@/components/feed-sidebar';
+import { PenIcon } from '@/components/icons';
 import { ACCESS_COOKIE, API_BASE } from '@/lib/backend';
 import type { Post } from '@/lib/types';
 
@@ -24,19 +26,35 @@ export default async function FeedPage() {
   if (!response.ok) throw new Error(`feed request failed: ${response.status}`);
 
   const data = (await response.json()) as FeedResponse;
+  const today = new Date().toLocaleDateString('zh-CN', {
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long',
+  });
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-8">
-      <div className="mb-5 flex items-center justify-between">
+    <main className="py-8 sm:py-10">
+      <section className="mb-8 flex flex-col justify-between gap-6 border-b border-[var(--line)] pb-8 sm:flex-row sm:items-end">
         <div>
-          <h1 className="text-2xl font-bold">关注流</h1>
-          <p className="mt-1 text-sm text-slate-500">你关注的人发布的帖子</p>
+          <p className="eyebrow">Following</p>
+          <h1 className="font-display mt-2 text-4xl font-semibold sm:text-5xl">关注流</h1>
+          <p className="mt-3 max-w-lg text-sm leading-6 text-[var(--ink-soft)]">
+            你关注的人正在做什么。慢一点读，认真回一句。
+          </p>
         </div>
-        <Link className="rounded bg-slate-900 px-4 py-2 text-sm text-white" href="/posts/new">
-          发帖
-        </Link>
+        <div className="flex items-center gap-3">
+          <span className="chip">{today}</span>
+          <Link className="btn-primary" href="/posts/new">
+            <PenIcon className="h-4 w-4" />
+            写点什么
+          </Link>
+        </div>
+      </section>
+
+      <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
+        <FeedList initialCursor={data.nextCursor} initialItems={data.items} />
+        <FeedSidebar posts={data.items} />
       </div>
-      <FeedList initialCursor={data.nextCursor} initialItems={data.items} />
     </main>
   );
 }
