@@ -9,6 +9,7 @@ const envSchema = z.object({
     JWT_SECRET: z.string().min(32),
     JWT_REFRESH_TTL_DAYS : z.coerce.number().int().positive().default(7),
     WEB_ORIGIN: z.url(),
+    INTERNAL_API_TOKEN: z.string().min(16),
     LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
 });
 

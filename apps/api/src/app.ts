@@ -11,6 +11,7 @@ import { commentsRouter } from "./modules/comments/comments.routes.ts";
 import { feedRouter } from "./modules/feed/feed.routes.ts";
 import { likesRouter } from "./modules/likes/likes.routes.ts";
 import { notificationsRouter } from "./modules/notifications/notifications.routes.ts";
+import { internalRouter } from "./modules/internal/internal.routes.ts";
 import { postsRouter } from "./modules/posts/posts.routes.ts";
 import { usersRouter } from "./modules/users/users.routes.ts";
 
@@ -33,6 +34,7 @@ export const createApp = () : Express => {
     app.use('/api/v1/posts/:postId/comments', commentsRouter);
     app.use('/api/v1/posts/:postId/like', likesRouter);
     app.use('/api/v1/notifications', notificationsRouter);
+    app.use('/internal', internalRouter);
     app.use('/docs', swaggerUi.serve, swaggerUi.setup(buildOpenApiDocument()))
 
     app.use(notFound);

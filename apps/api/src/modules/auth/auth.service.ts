@@ -4,7 +4,43 @@ import { prisma } from "../../common/db.ts";
 import { AppError } from "../../common/errors.ts";
 import { createRefreshToken, hashToken, signAccessToken } from "./token.service.ts";
 
-const refreshExpiresAt = () => new Date(Date.now() + config.JWT_REFRESH_TTL_DAYS * 86_400_400);
+const refreshExpiresAt = () => new Date(Date.now() + config.JWT_REFRESH_TTL_DAYS * 86_400_000);
+
+const roleInclude = {
+    roles: {
+        include: {
+            role: {
+                include: {
+                    rolePermissions: { include: { permission: true } },
+                },
+            },
+        },
+    },
+} as const;
+
+type UserWithRoles = {
+    id: bigint;
+    roles: Array<{
+        role: {
+            code: string;
+            rolePermissions: Array<{ permission: { code: string } }>;
+        };
+    }>;
+};
+
+function toAccessPayload(user: UserWithRoles) {
+    return {
+        sub: user.id.toString(),
+        roles: user.roles.map((item) => item.role.code),
+        permissions: [
+            ...new Set(
+                user.roles.flatMap((item) =>
+                    item.role.rolePermissions.map((entry) => entry.permission.code),
+                ),
+            ),
+        ],
+    };
+}
 
 export async function register(input: { email: string; password: string; nickname: string }) {
     const email = input.email.trim().toLowerCase();
@@ -28,7 +64,7 @@ export async function register(input: { email: string; password: string; nicknam
 export async function login(input: { email: string; password: string; userAgent?: string; ip?: string }) {
     const user = await prisma.user.findUnique({
         where: { email: input.email.trim().toLowerCase() },
-        include: { roles: { include: { role: true }}},
+        include: roleInclude,
     });
     if(!user || !(await argon2.verify(user.passwordHash, input.password))) {
         throw new AppError('INVALID_CREDENTIALS', 401, 'Email or password is incorrect.');
@@ -47,10 +83,7 @@ export async function login(input: { email: string; password: string; userAgent?
     })
 
     return {
-        accessToken: signAccessToken({
-            sub: user.id.toString(),
-            roles: user.roles.map((item) => item.role.code),
-        }),
+        accessToken: signAccessToken(toAccessPayload(user)),
         refreshToken: refresh.token,
         user: { id: user.id.toString(), email: user.email, nickname: user.nickname }
     }
@@ -72,7 +105,7 @@ export async function refresh(input: { refreshToken: string }) {
 
     const user = await prisma.user.findUnique({
         where: { id: stored.userId },
-        include: { roles: { include: { role: true } } },
+        include: roleInclude,
     });
     if (!user || user.status !== 'active') throw new AppError('ACCOUNT_DISABLED', 403, 'Account is not active');
 
@@ -91,10 +124,7 @@ export async function refresh(input: { refreshToken: string }) {
     ]);
 
     return {
-        accessToken: signAccessToken({
-            sub: user.id.toString(),
-            roles: user.roles.map((item) => item.role.code),
-        }),
+        accessToken: signAccessToken(toAccessPayload(user)),
         refreshToken: next.token,
     };
 }

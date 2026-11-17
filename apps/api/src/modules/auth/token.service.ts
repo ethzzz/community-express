@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import type { SignOptions} from 'jsonwebtoken';
 import { config } from '../../common/config.ts';
 
-export type AccessPayload = { sub: string; roles: string[] };
+export type AccessPayload = { sub: string; roles: string[]; permissions: string[] };
 
 export function signAccessToken(payload: AccessPayload) {
     const expiresIn = '24h' as NonNullable<SignOptions['expiresIn']>;
@@ -15,7 +15,8 @@ export function verifyAccessToken(token:string): AccessPayload {
     if(typeof decoded === 'string') throw new Error('Invalid token payload');
     return {
         sub: String(decoded.sub),
-        roles: Array.isArray(decoded.roles) ? decoded.roles.map(String) : []
+        roles: Array.isArray(decoded.roles) ? decoded.roles.map(String) : [],
+        permissions: Array.isArray(decoded.permissions) ? decoded.permissions.map(String) : [],
     }
 }
 
