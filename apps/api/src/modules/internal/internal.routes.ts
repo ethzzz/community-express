@@ -3,6 +3,7 @@ import { Router } from 'express';
 import { requireInternalToken } from '../../common/internal-auth.ts';
 import { prisma } from '../../common/db.ts';
 import { AppError } from '../../common/errors.ts';
+import { indexPosts } from '../../common/meili.ts';
 import { asyncHandler } from '../../common/middleware.ts';
 import { parseBigIntId } from '../../common/params.ts';
 
@@ -124,4 +125,23 @@ internalRouter.get('/stats', asyncHandler(async (_req, res) => {
     ]);
 
     res.json({ pendingPosts, publishedPosts, users, bannedUsers });
+}));
+
+internalRouter.post('/search/reindex', asyncHandler(async (_req, res) => {
+    const posts = await prisma.post.findMany({
+        where: { status: 'published' },
+        select: { id: true, title: true, content: true, authorId: true, createdAt: true },
+    });
+
+    const indexed = await indexPosts(
+        posts.map((post) => ({
+            id: post.id.toString(),
+            title: post.title,
+            content: post.content,
+            authorId: post.authorId.toString(),
+            createdAt: post.createdAt.toISOString(),
+        })),
+    );
+
+    res.json({ posts: posts.length, configured: indexed });
 }));

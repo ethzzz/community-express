@@ -50,6 +50,8 @@ test('admin can open moderation console', async ({ page }) => {
 });
 
 test('search and AI assistant respond', async ({ page }) => {
+  await login(page, 'a1@test.com');
+
   await page.goto('/search');
   await page.getByPlaceholder(/搜标题或正文/).fill('验收');
   await expect(page.getByRole('heading', { name: 'D 的验收帖 1' }).first()).toBeVisible();
@@ -57,5 +59,5 @@ test('search and AI assistant respond', async ({ page }) => {
   await page.goto('/assistant');
   await page.getByPlaceholder('问问围炉助手...').fill('搜索是怎么工作的？');
   await page.getByRole('button', { name: '发送' }).click();
-  await expect(page.getByText(/搜索会先尝试/)).toBeVisible();
+  await expect(page.getByText(/搜索优先使用 Meilisearch/)).toBeVisible();
 });

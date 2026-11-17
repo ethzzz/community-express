@@ -11,6 +11,11 @@ const envSchema = z.object({
     WEB_ORIGIN: z.url(),
     INTERNAL_API_TOKEN: z.string().min(16),
     LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
+    MEILI_HOST: z.url().optional(),
+    MEILI_KEY: z.string().optional(),
+    OPENAI_API_KEY: z.string().optional(),
+    OPENAI_BASE_URL: z.url().default('https://api.openai.com/v1'),
+    OPENAI_MODEL: z.string().default('gpt-4o-mini'),
 });
 
 const parsed = envSchema.safeParse(process.env);

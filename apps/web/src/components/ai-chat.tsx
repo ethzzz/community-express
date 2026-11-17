@@ -43,17 +43,35 @@ export function AiChat() {
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
+      let buffer = '';
       let answer = '';
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        answer += decoder.decode(value, { stream: true });
-        setMessages((items) => {
-          const next = [...items];
-          next[next.length - 1] = { role: 'assistant', content: answer };
-          return next;
-        });
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() ?? '';
+
+        for (const line of lines) {
+          if (!line.startsWith('data:')) continue;
+          const payload = line.slice(5).trim();
+          if (!payload || payload === '[DONE]') continue;
+
+          try {
+            const data = JSON.parse(payload) as { token?: string };
+            if (!data.token) continue;
+            answer += data.token;
+            setMessages((items) => {
+              const next = [...items];
+              next[next.length - 1] = { role: 'assistant', content: answer };
+              return next;
+            });
+          } catch {
+            // 忽略不完整的 SSE 行
+          }
+        }
       }
     } catch (chatError) {
       if ((chatError as Error).name !== 'AbortError') {
