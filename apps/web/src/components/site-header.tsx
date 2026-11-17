@@ -3,10 +3,17 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LogoutButton } from '@/components/logout-button';
-import { BellIcon, PenIcon } from '@/components/icons';
+import {
+  BellIcon,
+  PenIcon,
+  SearchIcon,
+  SparkIcon,
+} from '@/components/icons';
 
 const links = [
   { href: '/feed', label: '关注流' },
+  { href: '/search', label: '搜索' },
+  { href: '/assistant', label: 'AI 助手' },
   { href: '/notifications', label: '通知', icon: true },
   { href: '/admin', label: '管理', adminOnly: true },
 ];
@@ -35,26 +42,47 @@ export function SiteHeader({
             </span>
           </Link>
 
-          {loggedIn && (
-            <nav className="hidden items-center gap-6 sm:flex">
-              {visibleLinks.map((link) => (
-                <Link
-                  className="nav-link flex items-center gap-1.5"
-                  data-active={pathname.startsWith(link.href)}
-                  href={link.href}
-                  key={link.href}
-                >
-                  {link.icon && <BellIcon className="h-3.5 w-3.5" />}
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-          )}
+          <nav className="hidden items-center gap-6 sm:flex">
+            {loggedIn
+              ? visibleLinks.map((link) => (
+                  <Link
+                    className="nav-link flex items-center gap-1.5"
+                    data-active={pathname.startsWith(link.href)}
+                    href={link.href}
+                    key={link.href}
+                  >
+                    {link.icon && <BellIcon className="h-3.5 w-3.5" />}
+                    {link.label}
+                  </Link>
+                ))
+              : [
+                  { href: '/search', label: '搜索' },
+                  { href: '/assistant', label: 'AI 助手' },
+                ].map((link) => (
+                  <Link className="nav-link" href={link.href} key={link.href}>
+                    {link.label}
+                  </Link>
+                ))}
+          </nav>
         </div>
 
         <div className="flex items-center gap-3">
           {loggedIn ? (
             <>
+              <Link
+                aria-label="搜索"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--line)] text-[var(--muted)] sm:hidden"
+                href="/search"
+              >
+                <SearchIcon className="h-4 w-4" />
+              </Link>
+              <Link
+                aria-label="AI 助手"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--line)] text-[var(--muted)] sm:hidden"
+                href="/assistant"
+              >
+                <SparkIcon className="h-4 w-4" />
+              </Link>
               <Link
                 aria-label="通知"
                 className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--line)] text-[var(--muted)] sm:hidden"
@@ -72,6 +100,20 @@ export function SiteHeader({
             </>
           ) : (
             <>
+              <Link
+                aria-label="搜索"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--line)] text-[var(--muted)] sm:hidden"
+                href="/search"
+              >
+                <SearchIcon className="h-4 w-4" />
+              </Link>
+              <Link
+                aria-label="AI 助手"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--line)] text-[var(--muted)] sm:hidden"
+                href="/assistant"
+              >
+                <SparkIcon className="h-4 w-4" />
+              </Link>
               <Link className="text-sm text-[var(--muted)] hover:text-[var(--ink)]" href="/login">
                 登录
               </Link>

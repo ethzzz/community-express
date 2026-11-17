@@ -48,3 +48,14 @@ test('admin can open moderation console', async ({ page }) => {
   await page.getByRole('link', { name: '帖子审核' }).click();
   await expect(page.getByRole('heading', { name: '帖子审核' })).toBeVisible();
 });
+
+test('search and AI assistant respond', async ({ page }) => {
+  await page.goto('/search');
+  await page.getByPlaceholder(/搜标题或正文/).fill('验收');
+  await expect(page.getByRole('heading', { name: 'D 的验收帖 1' }).first()).toBeVisible();
+
+  await page.goto('/assistant');
+  await page.getByPlaceholder('问问围炉助手...').fill('搜索是怎么工作的？');
+  await page.getByRole('button', { name: '发送' }).click();
+  await expect(page.getByText(/搜索会先尝试/)).toBeVisible();
+});
