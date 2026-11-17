@@ -5,8 +5,10 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: community
-    ports: ["3306:3306"]
-    volumes: ["mysql-data:/var/lib/mysql"]
+    ports: ["3307:3306"]
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
       interval: 10s
@@ -16,8 +18,79 @@ services:
   redis:
     image: redis:7-alpine
     container_name: community-redis
-    ports: ["6379:6379"]
+    ports: ["6380:6379"]
     volumes: ["redis-data:/data"]
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: community-rabbitmq
+    ports: ["5672:5672", "15672:15672"]
+
+  api:
+    build:
+      context: ../..
+      dockerfile: apps/api/Dockerfile
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: mysql://root:root@mysql:3306/community
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-01234567890123456789012345678901}
+      WEB_ORIGIN: http://localhost:8080
+      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:-dev-internal-token-change-me}
+    command: ["sh", "-c", "npx prisma migrate deploy && node dist/server.js"]
+    ports: ["3000:3000"]
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  admin-api:
+    build:
+      context: ../..
+      dockerfile: apps/admin-api/Dockerfile
+    environment:
+      NODE_ENV: production
+      ADMIN_DATABASE_URL: mysql://root:root@mysql:3306/community_admin
+      ADMIN_PORT: 3002
+      API_INTERNAL_URL: http://api:3000
+      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:-dev-internal-token-change-me}
+      JWT_SECRET: ${JWT_SECRET:-01234567890123456789012345678901}
+      WEB_ORIGIN: http://localhost:8080
+    command: ["sh", "-c", "npx prisma migrate deploy --schema prisma/schema.prisma && node dist/main.js"]
+    ports: ["3003:3002"]
+    depends_on:
+      mysql:
+        condition: service_healthy
+      api:
+        condition: service_started
+
+  web:
+    build:
+      context: ../..
+      dockerfile: apps/web/Dockerfile
+    environment:
+      API_BASE_INTERNAL: http://api:3000
+      ADMIN_API_URL: http://admin-api:3002
+      NEXT_PUBLIC_AI_ENABLED: "true"
+    ports: ["3002:3001"]
+    depends_on:
+      api:
+        condition: service_started
+      admin-api:
+        condition: service_started
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: community-nginx
+    ports: ["8080:80"]
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - web
+      - api
+      - admin-api
 
 volumes:
   mysql-data:

@@ -4,7 +4,10 @@ import express from 'express';
 import type { Express } from 'express';
 import swaggerUi from 'swagger-ui-express';
 import { config } from './common/config.ts'
+import { prisma } from './common/db.ts'
+import { redis } from './common/redis.ts'
 import { errorHandler, notFound, requestId} from "./common/middleware.ts";
+import { metricsMiddleware, metricsRegistry } from './common/metrics.ts';
 import { buildOpenApiDocument } from "./common/openapi.ts";
 import { authRouter } from "./modules/auth/auth.routes.ts";
 import { commentsRouter } from "./modules/comments/comments.routes.ts";
@@ -19,6 +22,7 @@ export const createApp = () : Express => {
     const app = express();
 
     app.use(requestId);
+    app.use(metricsMiddleware);
     app.use(cors({ origin: config.WEB_ORIGIN, credentials: true }));
     app.use(cookieParser());
     app.use(express.json({ limit: "1mb" }));
@@ -26,6 +30,21 @@ export const createApp = () : Express => {
     app.get('/health', (_req, res) => {
         res.status(200).json({ status: "OK" });
     })
+
+    app.get('/ready', async (_req, res) => {
+        try {
+            await prisma.$queryRaw`SELECT 1`;
+            await redis.ping();
+            res.status(200).json({ status: "ready" });
+        } catch {
+            res.status(503).json({ status: "unavailable" });
+        }
+    })
+
+    app.get('/metrics', async (_req, res) => {
+        res.set('Content-Type', metricsRegistry.contentType);
+        res.send(await metricsRegistry.metrics());
+    });
 
     app.use('/api/v1/auth', authRouter);
     app.use('/api/v1/feed', feedRouter);
