@@ -1,0 +1,78 @@
+{{- if .Values.migrate.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "community.name" . }}-api-migrate
+  labels:
+    app.kubernetes.io/name: {{ include "community.name" . }}-api
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  annotations:
+    # 迁移必须先于应用启动；失败则整个 Release 失败，避免新代码打到旧表结构。
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-weight: "-10"
+    helm.sh/hook-delete-policy: before-hook-creation
+spec:
+  backoffLimit: {{ .Values.migrate.backoffLimit }}
+  template:
+    spec:
+      restartPolicy: Never
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: migrate
+          image: {{ include "community.image" (dict "Values" .Values "image" .Values.api.image) }}
+          imagePullPolicy: {{ .Values.api.image.pullPolicy }}
+          command: ["npx", "prisma", "migrate", "deploy"]
+          envFrom:
+            - configMapRef:
+                name: {{ include "community.name" . }}-config
+            - secretRef:
+                name: {{ include "community.secretName" . }}
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "community.name" . }}-admin-migrate
+  labels:
+    app.kubernetes.io/name: {{ include "community.name" . }}-admin
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-weight: "-5"
+    helm.sh/hook-delete-policy: before-hook-creation
+spec:
+  backoffLimit: {{ .Values.migrate.backoffLimit }}
+  template:
+    spec:
+      restartPolicy: Never
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: migrate
+          image: {{ include "community.image" (dict "Values" .Values "image" .Values.adminApi.image) }}
+          imagePullPolicy: {{ .Values.adminApi.image.pullPolicy }}
+          command: ["npx", "prisma", "migrate", "deploy", "--schema", "prisma/schema.prisma"]
+          envFrom:
+            - configMapRef:
+                name: {{ include "community.name" . }}-config
+            - secretRef:
+                name: {{ include "community.secretName" . }}
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+{{- end }}

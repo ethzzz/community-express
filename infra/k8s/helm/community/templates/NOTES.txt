@@ -1,0 +1,17 @@
+Community 已部署，Release: {{ .Release.Name }}
+
+访问入口（Ingress 已启用时）：
+  http://{{ .Values.ingress.host }}
+
+集群内联调：
+  kubectl port-forward svc/{{ include "community.name" . }}-web {{ .Values.web.port }}:{{ .Values.web.port }}
+  kubectl port-forward svc/{{ include "community.name" . }}-admin {{ .Values.adminApi.port }}:{{ .Values.adminApi.port }}
+
+查看迁移结果：
+  kubectl get jobs -l app.kubernetes.io/instance={{ .Release.Name }}
+  kubectl logs job/{{ include "community.name" . }}-api-migrate
+
+注意：
+  1. 数据库/Redis 按外部托管处理，修改 values.yaml 中的 mysql.host / redis.host。
+  2. SSE 依赖 Ingress 关闭代理缓冲，nginx 注解已默认配置。
+  3. secrets.existingSecret 为空时使用 values 中的明文值生成 Secret，生产环境请改用外部 Secret。

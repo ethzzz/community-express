@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "community.name" . }}-api
+  labels:
+    app.kubernetes.io/name: {{ include "community.name" . }}-api
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: {{ include "community.name" . }}-api
+  ports:
+    - name: http
+      port: {{ .Values.api.port }}
+      targetPort: http

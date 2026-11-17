@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "community.name" . }}-admin
+  labels:
+    app.kubernetes.io/name: {{ include "community.name" . }}-admin
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: {{ include "community.name" . }}-admin
+  ports:
+    - name: http
+      port: {{ .Values.adminApi.port }}
+      targetPort: http

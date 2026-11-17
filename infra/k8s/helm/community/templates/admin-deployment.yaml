@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "community.name" . }}-admin
+  labels:
+    app.kubernetes.io/name: {{ include "community.name" . }}-admin
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.adminApi.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "community.name" . }}-admin
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "community.name" . }}-admin
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: admin-api
+          image: {{ include "community.image" (dict "Values" .Values "image" .Values.adminApi.image) }}
+          imagePullPolicy: {{ .Values.adminApi.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.adminApi.port }}
+          env:
+            - name: ADMIN_PORT
+              value: {{ .Values.adminApi.port | quote }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "community.name" . }}-config
+            - secretRef:
+                name: {{ include "community.secretName" . }}
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 15
+          resources:
+            {{- toYaml .Values.adminApi.resources | nindent 12 }}

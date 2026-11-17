@@ -1,0 +1,46 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "community.name" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "community.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  annotations:
+    {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- if .Values.ingress.tls.enabled }}
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host }}
+      secretName: {{ .Values.ingress.tls.secretName }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /api/
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "community.name" . }}-api
+                port:
+                  number: {{ .Values.api.port }}
+          - path: /admin-api/
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "community.name" . }}-admin
+                port:
+                  number: {{ .Values.adminApi.port }}
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "community.name" . }}-web
+                port:
+                  number: {{ .Values.web.port }}
+{{- end }}
